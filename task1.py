@@ -17,20 +17,19 @@ def url_check(url):
 
 
 @click.command(context_settings=CONTEXT_SETTINGS)
-@click.argument("filename", type=click.Path(exists=True))
+@click.option('-i', '--filename', type=click.File('r'))
 def main(filename):
     """Url status code checker"""
 
-    with open(filename, "r") as f_obj:
-        csv_obj = csv.reader(f_obj, delimiter="|")
-        for co in csv_obj:
-            url_name, url = co
-            res = url_check(url)
-            if isinstance(res, str) or not isinstance(res, requests.models.Response):
-                print(res)
-                continue
-            response_time = res.elapsed.total_seconds()
-            print(f"{repr(url_name)}, HTTP {res.status_code}, time {response_time:.2f} seconds")
+    csv_obj = csv.reader(filename, delimiter="|")
+    for co in csv_obj:
+        url_name, url = co
+        res = url_check(url)
+        if isinstance(res, str) or not isinstance(res, requests.models.Response):
+            print(res)
+            continue
+        response_time = res.elapsed.total_seconds()
+        print(f"{repr(url_name)}, HTTP {res.status_code}, time {response_time:.2f} seconds")
 
 
 if __name__ == "__main__":
